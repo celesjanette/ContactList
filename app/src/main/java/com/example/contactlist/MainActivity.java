@@ -188,18 +188,18 @@ public class MainActivity extends AppCompatActivity implements DatePickerDialog.
             }
         });
 
-        // Repeat for other EditText fields
+
 
         final EditText etEmail = findViewById(R.id.editEmail);
         etEmail.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                // You can remove this method or add any specific logic if needed
+
             }
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                // You can remove this method or add any specific logic if needed
+
             }
 
             @Override
@@ -211,12 +211,10 @@ public class MainActivity extends AppCompatActivity implements DatePickerDialog.
         etHome.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                // You can remove this method or add any specific logic if needed
             }
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                // You can remove this method or add any specific logic if needed
             }
 
             @Override
@@ -229,12 +227,12 @@ public class MainActivity extends AppCompatActivity implements DatePickerDialog.
         etCell.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                // You can remove this method or add any specific logic if needed
+
             }
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                // You can remove this method or add any specific logic if needed
+
             }
 
             @Override
