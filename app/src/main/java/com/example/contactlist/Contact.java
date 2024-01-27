@@ -70,7 +70,7 @@ public class Contact {
     public String getCellNumber() {
         return cellNumber;
     }
-    public void seteMailail (String s){
+    public void seteMail (String s){
         eMail = s;
     }
     public String geteMail() {
