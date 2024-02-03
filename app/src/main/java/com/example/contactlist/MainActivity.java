@@ -136,12 +136,12 @@ public class MainActivity extends AppCompatActivity implements DatePickerDialog.
         etContactName.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                // You can remove this method or add any specific logic if needed
+
             }
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                // You can remove this method or add any specific logic if needed
+
             }
 
             @Override
@@ -154,12 +154,12 @@ public class MainActivity extends AppCompatActivity implements DatePickerDialog.
         etStreetAddress.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                // You can remove this method or add any specific logic if needed
+
             }
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                // You can remove this method or add any specific logic if needed
+
             }
 
             @Override
@@ -168,18 +168,14 @@ public class MainActivity extends AppCompatActivity implements DatePickerDialog.
             }
         });
 
-        // Repeat the same structure for other EditText fields
-
         final EditText etCity = findViewById(R.id.editCity);
         etCity.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                // You can remove this method or add any specific logic if needed
             }
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                // You can remove this method or add any specific logic if needed
             }
 
             @Override
@@ -187,9 +183,6 @@ public class MainActivity extends AppCompatActivity implements DatePickerDialog.
                 currentContact.setCity(etCity.getText().toString());
             }
         });
-
-
-
         final EditText etEmail = findViewById(R.id.editEmail);
         etEmail.addTextChangedListener(new TextWatcher() {
             @Override
@@ -245,40 +238,39 @@ public class MainActivity extends AppCompatActivity implements DatePickerDialog.
 
         etCell.addTextChangedListener(new PhoneNumberFormattingTextWatcher());
     }
-private void initSaveButton() {
+
+    private void initSaveButton() {
         Button saveButton = findViewById(R.id.saveButton);
         saveButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view){
+            public void onClick(View view) {
                 boolean wasSuccessful = false;
                 ContactDataSource ds = new ContactDataSource(MainActivity.this);
+
                 try {
                     ds.open();
+
                     if (currentContact.getContactID() == -1) {
+                        wasSuccessful = ds.insertContact(currentContact);
                         if (wasSuccessful) {
-
                             int newId = ds.getLastContactID();
-
                             currentContact.setContactID(newId);
-
                         }
                     } else {
                         wasSuccessful = ds.updateContact(currentContact);
                     }
+
                     ds.close();
-                }
-                catch (Exception e) {
+                } catch (Exception e) {
                     wasSuccessful = false;
                 }
+
                 if (wasSuccessful) {
                     ToggleButton editToggle = findViewById(R.id.toggleButtonEdit);
                     editToggle.toggle();
                     setForEditing(false);
-            }
+                }
             }
         });
+    }
 }
-}
-
-
-
