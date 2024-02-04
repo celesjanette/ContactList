@@ -12,6 +12,7 @@ public class ContactDataSource {
     private ContactDBHelper dbHelper;
 
     public ContactDataSource(Context context) {
+
         dbHelper = new ContactDBHelper(context);
     }
 
@@ -20,6 +21,7 @@ public class ContactDataSource {
     }
 
     public void close() {
+
         dbHelper.close();
     }
 
@@ -39,7 +41,7 @@ public class ContactDataSource {
 
             didSucceed = database.insert("contact", null, initialValues) > 0;
         } catch (Exception e) {
-
+// do nothing
         }
         return didSucceed;
     }
