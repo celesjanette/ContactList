@@ -244,7 +244,7 @@ public class MainActivity extends AppCompatActivity implements DatePickerDialog.
         saveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                boolean wasSuccessful = false;
+                boolean wasSuccessful;
                 ContactDataSource ds = new ContactDataSource(MainActivity.this);
 
                 try {
