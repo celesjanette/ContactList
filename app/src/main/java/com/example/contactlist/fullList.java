@@ -12,12 +12,15 @@ import android.widget.ImageButton;
 import android.widget.Toast;
 
 public class fullList extends AppCompatActivity {
+    private ArrayList<String> names;
     private View.OnClickListener onItemClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
             RecyclerView.ViewHolder viewHolder = (RecyclerView.ViewHolder) view.getTag();
             int position = viewHolder.getAdapterPosition();
+            //int contactId = contacts.get(position).getContactID();
             Intent intent = new Intent(fullList.this, MainActivity.class);
+            //intent.putExtra("contactID", contactId);
             startActivity(intent);
         }
     };
@@ -26,15 +29,17 @@ public class fullList extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_full_list);
+        //RecyclerView recyclerView = findViewById(R.id.rvContacts);
+
         initSettingButton();
         initMapButton();
         initListButton();
         ContactDataSource ds = new ContactDataSource(this);
-        ArrayList<String> names;
+        ArrayList<Contact> contacts;
 
         try {
             ds.open();
-            names = ds.getContactNames();
+           names = ds.getContactName();
             ds.close();
 
             RecyclerView contactList = findViewById(R.id.rvContacts);
