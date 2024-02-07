@@ -19,7 +19,7 @@ public class DatePickerDialog extends DialogFragment {
     }
 
     public DatePickerDialog() {
-        // Empty constructor required for DialogFragment
+
     }
 
     @Override
@@ -32,7 +32,7 @@ public class DatePickerDialog extends DialogFragment {
         cv.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
             @Override
             public void onSelectedDayChange(CalendarView calendarView, int year, int month, int day) {
-                selectedDate.set(year +2 , month, day);
+                selectedDate.set(year , month, day);
 
                 //selectedDate.add(year, 2);
 
