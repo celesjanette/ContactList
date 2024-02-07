@@ -12,15 +12,15 @@ import android.widget.ImageButton;
 import android.widget.Toast;
 
 public class fullList extends AppCompatActivity {
-    private ArrayList<String> names;
+    private ArrayList<Contact> contacts;
     private View.OnClickListener onItemClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
             RecyclerView.ViewHolder viewHolder = (RecyclerView.ViewHolder) view.getTag();
             int position = viewHolder.getAdapterPosition();
-            //int contactId = contacts.get(position).getContactID();
+            int contactId = contacts.get(position).getContactID();
             Intent intent = new Intent(fullList.this, MainActivity.class);
-            //intent.putExtra("contactID", contactId);
+            intent.putExtra("contactID", contactId);
             startActivity(intent);
         }
     };
@@ -39,13 +39,13 @@ public class fullList extends AppCompatActivity {
 
         try {
             ds.open();
-           names = ds.getContactName();
+           contacts = ds.getContacts();
             ds.close();
 
             RecyclerView contactList = findViewById(R.id.rvContacts);
             RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
             contactList.setLayoutManager(layoutManager);
-            ContactAdapter contactAdapter = new ContactAdapter(names);
+            ContactAdapter contactAdapter = new ContactAdapter(contacts);
             contactList.setAdapter(contactAdapter);
         } catch (Exception e){
             Toast.makeText(this, "Error retrieving contacts", Toast.LENGTH_LONG).show();
