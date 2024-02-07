@@ -4,15 +4,23 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.util.ArrayList;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.ImageButton;
+import android.widget.Button;
+import android.widget.CompoundButton;
+import android.widget.Switch;
 import android.widget.Toast;
+import android.widget.ImageButton;
+
+import java.util.ArrayList;
 
 public class fullList extends AppCompatActivity {
-    private ArrayList<Contact> contacts;
+    RecyclerView contactList;
+    ContactAdapter contactAdapter;
+
+    ArrayList<Contact> contacts;
     private View.OnClickListener onItemClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
@@ -20,7 +28,7 @@ public class fullList extends AppCompatActivity {
             int position = viewHolder.getAdapterPosition();
             int contactId = contacts.get(position).getContactID();
             Intent intent = new Intent(fullList.this, MainActivity.class);
-            intent.putExtra("contactID", contactId);
+            intent.putExtra("contactId", contactId);
             startActivity(intent);
         }
     };
@@ -29,29 +37,63 @@ public class fullList extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_full_list);
-        //RecyclerView recyclerView = findViewById(R.id.rvContacts);
 
+        initAddContactButton();
+        initDeleteSwitch();
         initSettingButton();
         initMapButton();
-        initListButton();
-        ContactDataSource ds = new ContactDataSource(this);
-        ArrayList<Contact> contacts;
+    }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        String sortBy = getSharedPreferences("MyContactListPreferences", Context.MODE_PRIVATE).getString("sortfield", "contactname");
+        String sortOrder = getSharedPreferences("MyContactListPreferences", Context.MODE_PRIVATE).getString("sortorder", "ASC");
+
+        ContactDataSource ds = new ContactDataSource(this);
         try {
             ds.open();
-           contacts = ds.getContacts();
+            contacts = ds.getContacts(sortBy, sortOrder);
             ds.close();
-
-            RecyclerView contactList = findViewById(R.id.rvContacts);
-            RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
-            contactList.setLayoutManager(layoutManager);
-            ContactAdapter contactAdapter = new ContactAdapter(contacts);
-            contactList.setAdapter(contactAdapter);
-        } catch (Exception e){
+            if (contacts.size() > 0) {
+                contactList = findViewById(R.id.rvContacts);
+                RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
+                contactList.setLayoutManager(layoutManager);
+                contactAdapter = new ContactAdapter(contacts, this);
+                contactAdapter.setOnItemClickListener(onItemClickListener);
+                contactList.setAdapter(contactAdapter);
+            } else {
+                Intent intent = new Intent(fullList.this, MainActivity.class);
+                startActivity(intent);
+            }
+        } catch (Exception e) {
             Toast.makeText(this, "Error retrieving contacts", Toast.LENGTH_LONG).show();
         }
-
     }
+
+    private void initAddContactButton() {
+        Button newContact = findViewById(R.id.buttonAddContact);
+        newContact.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                Intent intent = new Intent(fullList.this, MainActivity.class);
+                startActivity(intent);
+            }
+        });
+    }
+
+    private void initDeleteSwitch() {
+        Switch s = findViewById(R.id.switchDelete);
+        s.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                boolean status = compoundButton.isChecked();
+                contactAdapter.setDelete(status);
+                contactAdapter.notifyDataSetChanged();
+            }
+        });
+    }
+
 
     private void initListButton() {
         ImageButton ibList = findViewById(R.id.ibContactList);
@@ -85,5 +127,4 @@ public class fullList extends AppCompatActivity {
             }
         });
     }
-
 }
