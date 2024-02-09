@@ -123,7 +123,7 @@ public ArrayList<String> getContactName() {
                 Calendar calendar = Calendar.getInstance();
                 calendar.setTimeInMillis(Long.valueOf(cursor.getString(9)));
                 newContact.setBirthday(calendar);
-                contacts.add(newContact); // Add the contact to the list
+                contacts.add(newContact); // Add the contacts to list
                 cursor.moveToNext();
             }
             cursor.close();

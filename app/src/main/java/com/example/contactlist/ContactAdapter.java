@@ -23,11 +23,13 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ContactV
 
         public TextView textViewContact;
         public TextView textHome;
+        public TextView textMail;
         public Button deleteButton;
         public ContactViewHolder(@NonNull View itemView) {
             super(itemView);
             textViewContact = itemView.findViewById(R.id.textContactName);
             textHome = itemView.findViewById(R.id.textHomeNumber);
+            textMail = itemView.findViewById(R.id.textMail);
             deleteButton = itemView.findViewById(R.id.buttonDeleteContact);
             itemView.setTag(this);
             itemView.setOnClickListener(mOnItemClickListener);
@@ -39,6 +41,7 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ContactV
         public TextView getHomeTextView() {
             return textHome;
         }
+        public TextView getTextMail() { return textMail;}
         public Button getDeleteButton() {
             return deleteButton;
         }
@@ -53,7 +56,7 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ContactV
         mOnItemClickListener = itemClickListener;
     }
 
-    @NonNull
+    @NonNull // required method for a RecyclerView.Adapter. It overrides the superclasses method. This method is called for each item in the data set to be displayed. Its job is to create the visual display for each item using the layout file we created. For each item, a ViewHolder is created using the inflated XML and returned to the RecylcerView to be displayed in the activity.
     @Override
     public ContactViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item, parent, false);
@@ -64,8 +67,10 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ContactV
     public void onBindViewHolder(@NonNull ContactViewHolder holder, final int position) {
         holder.getContactTextView().setText(contactData.get(position).getContactName());
         holder.getHomeTextView().setText(contactData.get(position).getHomeNumber());
+        holder.getTextMail().setText(contactData.get(position).geteMail());
         if (isDeleting) {
             holder.getDeleteButton().setVisibility(View.VISIBLE);
+
             holder.getDeleteButton().setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -111,3 +116,7 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ContactV
         isDeleting = b;
     }
 }
+// KEY NOTES
+// adapter provides access to the underlying data source for the list and implements special list functionality, such as deleting list items.
+// ViewHolder is an object that belongs to the adapter
+// LayoutManager. A LayoutManager is responsible for measuring and positioning items (views) in the list, as well as determining when a view needs to be recycled (or reused because another item in the list needs to be displayed).

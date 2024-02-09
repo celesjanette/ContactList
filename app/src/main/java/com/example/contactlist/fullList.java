@@ -42,6 +42,7 @@ public class fullList extends AppCompatActivity {
         initDeleteSwitch();
         initSettingButton();
         initMapButton();
+        initListButton();
     }
 
     @Override
@@ -128,3 +129,11 @@ public class fullList extends AppCompatActivity {
         });
     }
 }
+// SharedPreferences used to store primitive data (e.g., integers and strings) in a key/value pair.
+// SharedPreferences are stored in memory private to the app and will persist as long as
+// SQLite also provides capabilities for retrieval and manipulation of the stored data through the use of queries written in Structured Query Language (SQL).
+// getSharedPreferences mode is used when you want to have more than one set of preferences for an app or you want the preferences available to any Activity in the app.
+// KEY NOTES
+// adapter provides access to the underlying data source for the list and implements special list functionality, such as deleting list items.
+// ViewHolder is an object that belongs to the adapter
+// LayoutManager. A LayoutManager is responsible for measuring and positioning items (views) in the list, as well as determining when a view needs to be recycled (or reused because another item in the list needs to be displayed).
