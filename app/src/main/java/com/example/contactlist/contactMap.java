@@ -28,6 +28,10 @@ import java.io.IOException;
 
 public class contactMap extends AppCompatActivity {
     LocationManager locationManager;
+    LocationListener networkListener;
+    Location currentBestLocation;
+
+
     LocationListener gpsListener;
 
     final int PERMISSION_REQUEST_LOCATION = 101;
@@ -89,13 +93,16 @@ public class contactMap extends AppCompatActivity {
             gpsListener = new LocationListener() {
                 @Override
                 public void onLocationChanged(Location location) {
-                    TextView txtLatitude = findViewById(R.id.textLatitude);
-                    TextView txtLongitude = findViewById(R.id.textLongitude);
-                    TextView txtAccuracy = findViewById(R.id.textAccuracy);
+                    if (isBetterLocation(location)) {
+                        currentBestLocation = location;
+                        TextView txtLatitude = findViewById(R.id.textLatitude);
+                        TextView txtLongitude = findViewById(R.id.textLongitude);
+                        TextView txtAccuracy = findViewById(R.id.textAccuracy);
 
-                    txtLatitude.setText(String.valueOf(location.getLatitude()));
-                    txtLongitude.setText(String.valueOf(location.getLongitude()));
-                    txtAccuracy.setText(String.valueOf(location.getAccuracy()));
+                        txtLatitude.setText(String.valueOf(location.getLatitude()));
+                        txtLongitude.setText(String.valueOf(location.getLongitude()));
+                        txtAccuracy.setText(String.valueOf(location.getAccuracy()));
+                    }
                 }
 
                 @Override
@@ -111,8 +118,40 @@ public class contactMap extends AppCompatActivity {
                 }
             };
 
-            locationManager.requestLocationUpdates(
-                    LocationManager.GPS_PROVIDER, 0, 0, gpsListener);
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, gpsListener);
+
+            // Duplicate the GPS listener code for network location updates
+            networkListener = new LocationListener() {
+                @Override
+                public void onLocationChanged(Location location) {
+                    if (isBetterLocation(location)) {
+                        currentBestLocation = location;
+                        // This code block is a duplicate of the GPS listener's onLocationChanged method
+                        TextView txtLatitude = findViewById(R.id.textLatitude);
+                        TextView txtLongitude = findViewById(R.id.textLongitude);
+                        TextView txtAccuracy = findViewById(R.id.textAccuracy);
+
+                        txtLatitude.setText(String.valueOf(location.getLatitude()));
+                        txtLongitude.setText(String.valueOf(location.getLongitude()));
+                        txtAccuracy.setText(String.valueOf(location.getAccuracy()));
+                    }
+                }
+
+                @Override
+                public void onStatusChanged(String provider, int status, Bundle extras) {
+                }
+
+                @Override
+                public void onProviderEnabled(String provider) {
+                }
+
+                @Override
+                public void onProviderDisabled(String provider) {
+                }
+            };
+
+            // Request network location updates
+            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, networkListener);
         } catch (Exception e) {
             Toast.makeText(getBaseContext(), "Error, Location not available", Toast.LENGTH_LONG).show();
         }
@@ -132,7 +171,6 @@ public class contactMap extends AppCompatActivity {
                 break;
         }
     }
-
 
     public void initGetLocationButton() {
         try {
@@ -185,9 +223,23 @@ public class contactMap extends AppCompatActivity {
                         PackageManager.PERMISSION_GRANTED) {
             try {
                 locationManager.removeUpdates(gpsListener);
+                locationManager.removeUpdates(networkListener); // Remove network updates
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
+    }
+
+    private boolean isBetterLocation(Location location) {
+        boolean isBetter = false;
+        if (currentBestLocation == null) {
+            isBetter = true;
+        } else if (location.getAccuracy() <= currentBestLocation.getAccuracy()) {
+            isBetter = true;
+        } else if (location.getTime() - currentBestLocation.getTime() > 5 * 60 * 1000) {
+            isBetter = true;
+        }
+        return isBetter;
+
     }
 }
