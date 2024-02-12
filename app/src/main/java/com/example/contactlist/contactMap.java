@@ -1,7 +1,12 @@
 package com.example.contactlist;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
+import androidx.core.app.ActivityCompat;
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
@@ -12,8 +17,11 @@ import android.location.Geocoder;
 import android.location.Address;
 import android.location.LocationListener;
 import android.location.LocationManager;
-
+import android.widget.Toast;
+import android.location.Location;
 import org.w3c.dom.Text;
+import com.google.android.material.snackbar.Snackbar;
+
 
 import java.util.List;
 import java.io.IOException;
@@ -21,6 +29,8 @@ import java.io.IOException;
 public class contactMap extends AppCompatActivity {
     LocationManager locationManager;
     LocationListener gpsListener;
+
+    final int PERMISSION_REQUEST_LOCATION = 101;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,48 +73,121 @@ public class contactMap extends AppCompatActivity {
         ibMap.setEnabled(false);
     }
 
-    public void initGetLocationButton() {
-        Button locationButton = findViewById(R.id.buttonGetLocation);
-        locationButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Fix null pointer exception by checking if EditTexts are null
-                EditText editAddress = findViewById(R.id.editTextAddress);
-                EditText editCity = findViewById(R.id.editTextCity);
-                EditText editState = findViewById(R.id.editTextState); // Corrected from editTextText3
-                EditText editZipCode = findViewById(R.id.editTextZipcode);
+    private void startLocationUpdates() {
+        if (Build.VERSION.SDK_INT >= 23 &&
+                ContextCompat.checkSelfPermission(getBaseContext(),
+                        android.Manifest.permission.ACCESS_FINE_LOCATION) !=
+                        PackageManager.PERMISSION_GRANTED &&
+                ContextCompat.checkSelfPermission(getBaseContext(),
+                        android.Manifest.permission.ACCESS_COARSE_LOCATION) !=
+                        PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
 
-                // Check if any EditTexts are null
-                if (editAddress == null || editCity == null || editState == null || editZipCode == null) {
-                    // Handle the case where EditTexts are not found
-                    return;
+        try {
+            locationManager = (LocationManager) getBaseContext().getSystemService(Context.LOCATION_SERVICE);
+            gpsListener = new LocationListener() {
+                @Override
+                public void onLocationChanged(Location location) {
+                    TextView txtLatitude = findViewById(R.id.textLatitude);
+                    TextView txtLongitude = findViewById(R.id.textLongitude);
+                    TextView txtAccuracy = findViewById(R.id.textAccuracy);
+
+                    txtLatitude.setText(String.valueOf(location.getLatitude()));
+                    txtLongitude.setText(String.valueOf(location.getLongitude()));
+                    txtAccuracy.setText(String.valueOf(location.getAccuracy()));
                 }
 
-                String address = editAddress.getText().toString() + ", " +
-                        editCity.getText().toString() + ", " +
-                        editState.getText().toString() + ", " +
-                        editZipCode.getText().toString();
-                List<Address> addresses = null;
-                Geocoder geo = new Geocoder(contactMap.this);
-                try {
-                    addresses = geo.getFromLocationName(address, 1);
-                } catch (IOException e) {
-                    e.printStackTrace();
+                @Override
+                public void onStatusChanged(String provider, int status, Bundle extras) {
                 }
 
-                TextView txtLatitude = findViewById(R.id.textLatitude);
-                TextView txtLongitude = findViewById(R.id.textLongitude);
+                @Override
+                public void onProviderEnabled(String provider) {
+                }
 
-                // Check if addresses is null or empty
-                if (addresses != null && !addresses.isEmpty()) {
-                    txtLatitude.setText(String.valueOf(addresses.get(0).getLatitude()));
-                    txtLongitude.setText(String.valueOf(addresses.get(0).getLongitude()));
+                @Override
+                public void onProviderDisabled(String provider) {
+                }
+            };
+
+            locationManager.requestLocationUpdates(
+                    LocationManager.GPS_PROVIDER, 0, 0, gpsListener);
+        } catch (Exception e) {
+            Toast.makeText(getBaseContext(), "Error, Location not available", Toast.LENGTH_LONG).show();
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults); // Call to super method
+
+        switch (requestCode) {
+            case PERMISSION_REQUEST_LOCATION:
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    startLocationUpdates();
                 } else {
-                    // Handle the case where no addresses were found
-                    txtLatitude.setText("No coordinates found");
-                    txtLongitude.setText("No coordinates found");
+                    Toast.makeText(contactMap.this, "MyContactList will not locate your contacts.", Toast.LENGTH_LONG).show();
                 }
+                break;
+        }
+    }
+
+
+    public void initGetLocationButton() {
+        try {
+            if (Build.VERSION.SDK_INT >= 23) {
+                if (ContextCompat.checkSelfPermission(contactMap.this,
+                        android.Manifest.permission.ACCESS_FINE_LOCATION) !=
+                        PackageManager.PERMISSION_GRANTED) {
+                    if (ActivityCompat.shouldShowRequestPermissionRationale(contactMap.this, android.Manifest.permission.ACCESS_FINE_LOCATION)) {
+                        Snackbar.make(findViewById(R.id.activity_contact_map),
+                                        "MyContactList requires this permission to locate " + "your contacts", Snackbar.LENGTH_INDEFINITE)
+                                .setAction("OK", new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View view) {
+                                        ActivityCompat.requestPermissions(
+                                                contactMap.this, new String[]{
+                                                        android.Manifest.permission.ACCESS_FINE_LOCATION}, PERMISSION_REQUEST_LOCATION);
+                                    }
+                                }).show();
+                    } else {
+                        ActivityCompat.requestPermissions(contactMap.this, new
+                                        String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
+                                PERMISSION_REQUEST_LOCATION);
+                    }
+                } else {
+                    startLocationUpdates();
+                }
+            } else {
+                startLocationUpdates();
             }
-        });
+
+            try {
+                startLocationUpdates();
+            } catch (Exception e) {
+                Toast.makeText(getBaseContext(), "Error requesting permission", Toast.LENGTH_LONG).show();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        if (Build.VERSION.SDK_INT >= 23 &&
+                ContextCompat.checkSelfPermission(getBaseContext(),
+                        android.Manifest.permission.ACCESS_FINE_LOCATION) !=
+                        PackageManager.PERMISSION_GRANTED &&
+                ContextCompat.checkSelfPermission(getBaseContext(),
+                        android.Manifest.permission.ACCESS_COARSE_LOCATION) !=
+                        PackageManager.PERMISSION_GRANTED) {
+            try {
+                locationManager.removeUpdates(gpsListener);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
     }
 }
