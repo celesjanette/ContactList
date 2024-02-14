@@ -59,19 +59,20 @@ public class contactMap extends AppCompatActivity implements OnMapReadyCallback 
         try {
             ContactDataSource ds = new ContactDataSource(contactMap.this);
             ds.open();
-            if(extras !=null){
+            if (extras != null) {
                 currentContact = ds.getSpecificContact(extras.getInt("contactid"));
-            }
-            else {
+            } else {
                 contacts = ds.getContacts("contactname", "ASC");
             }
             ds.close();
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             Toast.makeText(this, "Contact(s) could not be retrieved.", Toast.LENGTH_LONG).show();
         }
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
+        SupportMapFragment mapFragment = new SupportMapFragment();
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.map, mapFragment)
+                .commit();
         mapFragment.getMapAsync(this);
 
         createLocationRequest();
@@ -177,72 +178,91 @@ public class contactMap extends AppCompatActivity implements OnMapReadyCallback 
         gMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
 
         RadioButton rbNormal = findViewById(R.id.radioButtonNormal);
-
         rbNormal.setChecked(true);
+
         Point size = new Point();
         WindowManager w = getWindowManager();
         w.getDefaultDisplay().getSize(size);
         int measuredWidth = size.x;
         int measuredHeight = size.y;
 
-        if (contacts.size()>0) {
-            LatLngBounds.Builder builder = new LatLngBounds.Builder();
-            for (int i=0; i<contacts.size(); i++) {
-                currentContact = contacts.get(i);
+        LatLngBounds.Builder builder = new LatLngBounds.Builder();
+        for (int i = 0; i < contacts.size(); i++) {
+            currentContact = contacts.get(i);
 
-                Geocoder geo = new Geocoder(this);
-                List<Address> addresses = null;
+            Geocoder geo = new Geocoder(this);
+            List<Address> addresses = null;
 
-                String address = currentContact.getStreetAddress() + ", " +
-                        currentContact.getCity() + ", " +
-                        currentContact.getState() + " " +
-                        currentContact.getZipCode();
+            String address = currentContact.getStreetAddress() + ", " +
+                    currentContact.getCity() + ", " +
+                    currentContact.getState() + " " +
+                    currentContact.getZipCode();
 
-                try {
-                    addresses = geo.getFromLocationName(address, 1);
+            try {
+                addresses = geo.getFromLocationName(address, 1);
+                if (addresses != null && !addresses.isEmpty()) {
+                    LatLng point = new LatLng(addresses.get(0).getLatitude(), addresses.get(0).getLongitude());
+                    builder.include(point);
+                    gMap.addMarker(new MarkerOptions().position(point).title(currentContact.getContactName()).snippet(address));
                 }
-                catch (IOException e) {
-                    e.printStackTrace();
-                }
-                LatLng point = new LatLng(addresses.get(0).getLatitude(), addresses.get(0).getLongitude());
-                builder.include(point);
-
-                gMap.addMarker(new MarkerOptions().position(point).title(currentContact.getContactName()).snippet(address));
-            }
-            gMap.animateCamera(CameraUpdateFactory.newLatLngBounds(builder.build(), measuredWidth, measuredHeight, 450));
-        }
-        else {
-            if (currentContact != null) {
-                Geocoder geo = new Geocoder(this);
-                List<Address> addresses = null;
-
-                String address = currentContact.getStreetAddress() + ", " +
-                        currentContact.getCity() + ", " +
-                        currentContact.getState() + " " +
-                        currentContact.getZipCode();
-
-                try {
-                    addresses = geo.getFromLocationName(address, 1);
-                }
-                catch (IOException e) {
-                    e.printStackTrace();
-                }
-                LatLng point = new LatLng(addresses.get(0).getLatitude(),addresses.get(0).getLongitude());
-
-                gMap.addMarker(new MarkerOptions().position(point).title(currentContact.getContactName()).snippet(address));
-                gMap.animateCamera(CameraUpdateFactory. newLatLngZoom(point, 16));
-            }
-            else {
-                AlertDialog alertDialog = new AlertDialog.Builder(contactMap.this).create();
-                alertDialog.setTitle("No Data");
-                alertDialog.setMessage("No data is available for the mapping function.");
-                alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "OK", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        finish();
-                    } });
-                alertDialog.show();
+            } catch (IOException e) {
+                e.printStackTrace();
             }
         }
+
+        if (builder.build().getCenter() != null) {
+            LatLngBounds bounds = builder.build();
+            gMap.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, measuredWidth, measuredHeight, 450));
+        } else {
+            AlertDialog alertDialog = new AlertDialog.Builder(contactMap.this).create();
+            alertDialog.setTitle("No Data");
+            alertDialog.setMessage("No data is available for the mapping function.");
+            alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "OK", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int which) {
+                    finish();
+                }
+            });
+            alertDialog.show();
+        }
+
+        try {
+            if (Build.VERSION.SDK_INT >= 23) {
+                if (ContextCompat.checkSelfPermission(contactMap.this,
+                        Manifest.permission.ACCESS_FINE_LOCATION) !=
+                        PackageManager.PERMISSION_GRANTED) {
+                    if (ActivityCompat.shouldShowRequestPermissionRationale(contactMap.this, Manifest.permission.ACCESS_FINE_LOCATION)) {
+                        Snackbar.make(findViewById(R.id.activity_contact_map),
+                                        "MyContactList requires this permission to locate " + "your contacts", Snackbar.LENGTH_INDEFINITE)
+                                .setAction("OK", new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View view) {
+                                        ActivityCompat.requestPermissions(
+                                                contactMap.this, new String[]{
+                                                        Manifest.permission.ACCESS_FINE_LOCATION}, PERMISSION_REQUEST_LOCATION);
+                                    }
+                                }).show();
+                    } else {
+                        ActivityCompat.requestPermissions(contactMap.this, new
+                                        String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                                PERMISSION_REQUEST_LOCATION);
+                    }
+                } else {
+                    startLocationUpdates();
+                }
+            } else {
+                startLocationUpdates();
+            }
+
+            try {
+                startLocationUpdates();
+            } catch (Exception e) {
+                Toast.makeText(getBaseContext(), "Error requesting permission", Toast.LENGTH_LONG).show();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+
 
         try {
             if (Build.VERSION.SDK_INT >= 23) {
