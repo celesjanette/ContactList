@@ -5,9 +5,9 @@
     android:id="@+id/activity_contact_map"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-
     tools:context=".contactMap">
 
+    <!-- Navbar -->
     <LinearLayout
         android:id="@+id/linearLayout5"
         android:layout_width="438dp"
@@ -45,160 +45,45 @@
             app:srcCompat="@drawable/settingsicon" />
     </LinearLayout>
 
-    <TextView
-        android:id="@+id/textView"
-        android:layout_width="123dp"
-        android:layout_height="32dp"
-        android:layout_marginStart="16dp"
+    <!-- Map Fragment -->
+
+    <fragment
+        android:id="@+id/map"
+
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="2dp"
         android:layout_marginTop="16dp"
-        android:layout_marginEnd="272dp"
-        android:text="Address:"
+        android:layout_marginEnd="2dp"
+        android:layout_marginBottom="56dp"
+        app:layout_constraintBottom_toTopOf="@+id/linearLayout5"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.413" />
 
-    <EditText
-        android:id="@+id/editTextAddress"
-        android:layout_width="342dp"
-        android:layout_height="48dp"
-        android:layout_marginStart="12dp"
-        android:layout_marginTop="10dp"
-        android:layout_marginBottom="2dp"
-        android:ems="10"
-        android:hint="Enter Street Address:"
-        android:inputType="text"
-        app:layout_constraintBottom_toTopOf="@+id/editTextCity"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView" />
-
-    <EditText
-        android:id="@+id/editTextCity"
-        android:layout_width="175dp"
-        android:layout_height="46dp"
-        android:layout_marginStart="18dp"
-        android:layout_marginTop="2dp"
-        android:layout_marginEnd="7dp"
-        android:ems="10"
-        android:hint="City"
-        android:inputType="text"
-        app:layout_constraintEnd_toStartOf="@+id/editTextState"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editTextAddress" />
-
-    <EditText
-        android:id="@+id/editTextState"
-        android:layout_width="55dp"
-        android:layout_height="44dp"
+    <RadioGroup
+        android:id="@+id/radioGroupMapType"
+        android:layout_width="103dp"
+        android:layout_height="62dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="4dp"
-        android:layout_marginEnd="9dp"
-        android:ems="10"
-        android:hint="State"
-        android:inputType="text"
-        app:layout_constraintEnd_toStartOf="@+id/editTextZipcode"
-        app:layout_constraintStart_toEndOf="@+id/editTextCity"
-        app:layout_constraintTop_toBottomOf="@+id/editTextAddress" />
-
-    <EditText
-        android:id="@+id/editTextZipcode"
-        android:layout_width="133dp"
-        android:layout_height="43dp"
-        android:layout_marginStart="9dp"
-        android:layout_marginTop="6dp"
-        android:layout_marginEnd="14dp"
-        android:ems="10"
-        android:hint="Zipcode"
-        android:inputType="text"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/editTextState"
-        app:layout_constraintTop_toBottomOf="@+id/editTextAddress" />
-
-    <Button
-        android:id="@+id/buttonGetLocation"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="28dp"
-        android:layout_marginEnd="248dp"
-        android:text="Get Coordinates"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="23dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editTextCity" />
+        app:layout_constraintTop_toTopOf="@+id/map">
 
-    <TextView
-        android:id="@+id/textViewLat"
-        android:layout_width="wrap_content"
-        android:layout_height="19dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="19dp"
-        android:layout_marginEnd="53dp"
-        android:text="Latitude:"
-        app:layout_constraintBottom_toTopOf="@+id/textViewLong"
-        app:layout_constraintEnd_toStartOf="@+id/textLatitude"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/buttonGetLocation" />
+        <RadioButton
+            android:id="@+id/radioButtonNormal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Normal" />
 
-    <TextView
-        android:id="@+id/textViewLong"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="12dp"
-        android:layout_marginEnd="41dp"
-        android:layout_marginBottom="11dp"
-        android:text="Longitude:"
-        app:layout_constraintBottom_toTopOf="@+id/textViewAcc"
-        app:layout_constraintEnd_toStartOf="@+id/textLongitude"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textViewLat" />
-
-    <TextView
-        android:id="@+id/textViewAcc"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
-        android:layout_marginBottom="354dp"
-        android:text="Accuracy:"
-        app:layout_constraintBottom_toTopOf="@+id/linearLayout5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textViewLong" />
-
-    <TextView
-        android:id="@+id/textLatitude"
-        android:layout_width="52dp"
-        android:layout_height="23dp"
-        android:layout_marginTop="19dp"
-        android:layout_marginEnd="236dp"
-        android:hint="None"
-        app:layout_constraintBottom_toTopOf="@+id/textLongitude"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/textViewLat"
-        app:layout_constraintTop_toBottomOf="@+id/buttonGetLocation" />
-
-    <TextView
-        android:id="@+id/textLongitude"
-        android:layout_width="57dp"
-        android:layout_height="21dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="231dp"
-        android:layout_marginBottom="10dp"
-        android:hint="None"
-        app:layout_constraintBottom_toTopOf="@+id/textAccuracy"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/textViewLong"
-        app:layout_constraintTop_toBottomOf="@+id/textLatitude" />
-
-    <TextView
-        android:id="@+id/textAccuracy"
-        android:layout_width="54dp"
-        android:layout_height="21dp"
-        android:layout_marginStart="42dp"
-        android:layout_marginEnd="234dp"
-        android:layout_marginBottom="353dp"
-        android:hint="None"
-        app:layout_constraintBottom_toTopOf="@+id/linearLayout5"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/textViewAcc"
-        app:layout_constraintTop_toBottomOf="@+id/textLongitude" />
+        <RadioButton
+            android:id="@+id/radioButtonSatellite"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Satelite" />
+    </RadioGroup>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
