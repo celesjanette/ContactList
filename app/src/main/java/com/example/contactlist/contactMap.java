@@ -313,7 +313,7 @@ public class contactMap extends AppCompatActivity implements OnMapReadyCallback 
                         Manifest.permission.ACCESS_COARSE_LOCATION) !=
                         PackageManager.PERMISSION_GRANTED) {
             try {
-                stopLocationUpdates(); // Corrected method name from removeUpdates to stopLocationUpdates
+                stopLocationUpdates();
             } catch (Exception e) {
                 e.printStackTrace();
             }
