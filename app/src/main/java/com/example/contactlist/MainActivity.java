@@ -89,6 +89,8 @@ public class MainActivity extends AppCompatActivity implements DatePickerDialog.
         });
     }
 
+
+
     private void initToggleButton() {
         final ToggleButton editToggle = findViewById(R.id.toggleButtonEdit);
         editToggle.setOnClickListener(new View.OnClickListener() {
