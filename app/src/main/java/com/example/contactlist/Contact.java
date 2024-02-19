@@ -16,64 +16,95 @@ public class Contact {
         contactID = -1;
         birthday = Calendar.getInstance();
     }
+
     public int getContactID() {
         return contactID;
     }
+
     public void setContactID(int i) {
         contactID = i;
     }
-    public String getContactName () {
+
+    public String getContactName() {
         return contactName;
     }
-    public void setContactName (String s) {
+
+    public void setContactName(String s) {
         contactName = s;
     }
-    public Calendar getBirthday () {
-            return birthday;
+
+    public Calendar getBirthday() {
+        return birthday;
     }
-    public void setBirthday (Calendar c) {
+
+    public void setBirthday(Calendar c) {
         birthday = c;
     }
-    public String getStreetAddress () {
+
+    public String getStreetAddress() {
         return streetAddress;
     }
-    public void setStreetAddress (String s) {
+
+    public void setStreetAddress(String s) {
         streetAddress = s;
     }
-    public String getCity () {
+
+    public String getCity() {
         return city;
     }
-    public void setCity (String s) {
+
+    public void setCity(String s) {
         city = s;
     }
-    public String getState () {
+
+    public String getState() {
         return state;
     }
-    public void setState (String s) {
+
+    public void setState(String s) {
         state = s;
     }
-    public String getZipCode () {
+
+    public String getZipCode() {
         return zipCode;
     }
-    public void setZipCode (String s) {
+
+    public void setZipCode(String s) {
         zipCode = s;
     }
-    public void setHomeNumber (String s) {
+
+    public void setHomeNumber(String s) {
         homeNumber = s;
-}
+    }
+
     public String getHomeNumber() {
         return homeNumber;
     }
+
     public void setCellNumber(String s) {
         cellNumber = s;
     }
+
     public String getCellNumber() {
         return cellNumber;
     }
-    public void seteMail (String s){
+
+    public void seteMail(String s) {
         eMail = s;
     }
+
     public String geteMail() {
         return eMail;
+    }
+
+    public String getPhoneNumber() {
+        // Return either the home number or the cell number, depending on which one is set
+        if (homeNumber != null && !homeNumber.isEmpty()) {
+            return homeNumber;
+        } else if (cellNumber != null && !cellNumber.isEmpty()) {
+            return cellNumber;
+        } else {
+            return null; // Or return an empty string, depending on your logic
+        }
     }
 }
