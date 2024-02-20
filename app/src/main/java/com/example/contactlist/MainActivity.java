@@ -363,8 +363,9 @@ public class MainActivity extends AppCompatActivity implements DatePickerDialog.
         editPhone.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
-                checkPhonePermission(currentContact.getPhoneNumber());
-                return false;
+                String phoneNumber = editPhone.getText().toString();
+                checkPhonePermission(phoneNumber);
+                return true;
             }
         });
 
@@ -372,35 +373,20 @@ public class MainActivity extends AppCompatActivity implements DatePickerDialog.
         editCell.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
-                checkPhonePermission(currentContact.getCellNumber());
-                return false;
+                String phoneNumber = editCell.getText().toString();
+                checkPhonePermission(phoneNumber);
+                return true;
             }
         });
     }
+
     private void checkPhonePermission(String phoneNumber) {
         if (Build.VERSION.SDK_INT >= 23) {
             if (ContextCompat.checkSelfPermission(MainActivity.this,
-                    android.Manifest.permission.CALL_PHONE) == PackageManager.PERMISSION_GRANTED) {
-                if (ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.this,
-                        android.Manifest.permission.CALL_PHONE)) {
-                    Snackbar.make(findViewById(R.id.activity_main),
-                                    "MyContactList requires this permission to place a call from the app.",
-                                    Snackbar.LENGTH_INDEFINITE)
-                            .setAction("OK", new View.OnClickListener() {
-                                @Override
-                                public void onClick(View view) {
-                                    ActivityCompat.requestPermissions(
-                                            MainActivity.this,
-                                            new String[]{android.Manifest.permission.CALL_PHONE},
-                                            PERMISSION_REQUEST_PHONE);
-                                }
-                            })
-                            .show();
-                } else {
-                    ActivityCompat.requestPermissions(MainActivity.this,
-                            new String[]{android.Manifest.permission.CALL_PHONE},
-                            PERMISSION_REQUEST_PHONE);
-                }
+                    android.Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(MainActivity.this,
+                        new String[]{android.Manifest.permission.CALL_PHONE},
+                        PERMISSION_REQUEST_PHONE);
             } else {
                 callContact(phoneNumber);
             }
